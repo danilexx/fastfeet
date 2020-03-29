@@ -14,7 +14,7 @@ import { Form } from '@unform/mobile';
 import validate from '../../utils/validate';
 import { createProblem } from '../../services';
 
-const shema = Yup.object().shape({
+const schema = Yup.object().shape({
   problem: Yup.string().required('Obrigatorio'),
 });
 
@@ -22,8 +22,7 @@ const InformProblemScreen = ({ navigation, route }) => {
   const { deliveryId } = route.params.state;
   const formRef = React.useRef(null);
   const handleSubmit = async data => {
-    const isValid = await validate(shema, data, formRef);
-    console.log(isValid);
+    const isValid = await validate(schema, data, formRef);
     if (isValid) {
       await createProblem(deliveryId, data.problem);
       navigation.goBack();

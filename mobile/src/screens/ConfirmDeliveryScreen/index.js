@@ -55,7 +55,7 @@ const ConfirmDeliveryScreen = ({ navigation, route }) => {
         });
         navigation.goBack();
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
 
       setError('');

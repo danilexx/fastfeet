@@ -25,7 +25,6 @@ const LoginScreen = ({ navigation }) => {
           'id',
           'id não corresponde a nenhum entregador',
         );
-        console.log('id não achado');
       }
     }
   };

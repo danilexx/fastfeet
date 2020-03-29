@@ -53,7 +53,7 @@ const Login: React.FC<RouteComponentProps> = () => {
           name="password"
           type="password"
         />
-        <LoadingButton loading={isLoading && true} type="submit">
+        <LoadingButton loading={isLoading} type="submit">
           Entrar no Sistema
         </LoadingButton>
       </FormContainer>
