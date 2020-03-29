@@ -1,0 +1,44 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jest": "^25.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "momentjs": "^2.0.0",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.4.2",
+    "pg": "^7.18.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.3",
+    "sqlite3": "^4.1.1",
+    "yup": "^0.28.1"
+  },
+  "devDependencies": {
+    "@sucrase/jest-plugin": "^2.0.0",
+    "@types/jest": "^25.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jest": "^23.6.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "factory-girl": "^5.0.4",
+    "faker": "^4.1.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "sequelize-cli": "^5.5.1",
+    "sucrase": "^3.12.1",
+    "supertest": "^4.0.2"
+  },
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "dev:debug": "nodemon --inspect src/server.js",
+    "pretest": "set NODE_ENV=test&& sequelize db:migrate",
+    "builder": "sucrase ./src -D ./dist --transforms imports",
+    "test": "set NODE_ENV=test&& jest --watch",
+    "posttest": "set NODE_ENV=test&& sequelize db:migrate:undo:all"
+  }
+}
