@@ -2,12 +2,13 @@ import styled from "-/lib/StyledComponents";
 
 export const Container = styled.div`
   position: relative;
-  height: fit-content;
+  height: 100%;
 `;
 
 export const Field = styled.input`
   display: flex;
   flex: 1;
+  height: 100%;
   border: 1px solid ${props => props.theme.gray[2]};
   border-radius: 5px;
   padding: 1rem 3rem;

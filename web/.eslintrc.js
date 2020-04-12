@@ -53,7 +53,8 @@ module.exports = {
     "no-restricted-globals": "off",
     "no-alert": "off",
     "react/no-array-index-key": "off",
-    "react/jsx-one-expression-per-line": "off"
+    "react/jsx-one-expression-per-line": "off",
+    "no-unused-expressions": "off"
   },
  
 };

@@ -15,6 +15,7 @@ import validate from "-/utils/validate";
 import useAwait from "-/utils/useAwait";
 import { createRecipient } from "-/services";
 import { recipientValidationSchema } from "-/utils/validationSchemas";
+import MaskedInput from "-/components/Input/MaskedInput";
 
 Yup.setLocale({
   mixed: {
@@ -90,7 +91,7 @@ const CreateRecipient: React.FC<RouteComponentProps> = ({ navigate }) => {
         <Row>
           <Input placeholder="Suzano" name="city" label="Cidade" />
           <Input placeholder="São Paulo" name="state" label="Estado" />
-          <Input placeholder="00000-000" name="cep" label="CEP" />
+          <MaskedInput mask="99999-999" name="cep" label="CEP" />
         </Row>
       </FormSection>
     </Background>

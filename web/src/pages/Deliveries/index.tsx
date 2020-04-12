@@ -7,6 +7,9 @@ import DeliveriesTable from "-/components/DeliveriesTable";
 import { IconedButton } from "-/components/Button";
 import useAwait from "-/utils/useAwait";
 import { getDeliveries } from "-/services";
+import ListActions from "-/components/ListActions";
+import DeliveriesTypeSwitch from "-/components/DeliveriesTypeSwitch";
+import Pagination from "-/components/Pagination";
 
 const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [data, setData] = React.useState<any>([]);
@@ -34,12 +37,15 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
     <Background>
       <Header>Gerenciando Encomendas</Header>
       <TopSection>
-        <SearchBar
-          value={search}
-          loading={loading}
-          onChange={handleChange}
-          placeholder="Buscar por encomendas"
-        />
+        <ListActions>
+          <SearchBar
+            value={search}
+            loading={loading}
+            onChange={handleChange}
+            placeholder="Buscar por encomendas"
+          />
+          <DeliveriesTypeSwitch />
+        </ListActions>
         <IconedButton
           onClick={() => {
             if (navigate) {
@@ -51,6 +57,7 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
         </IconedButton>
       </TopSection>
       <DeliveriesTable data={data} loading={loading} />
+      <Pagination pages={1} />
     </Background>
   );
 };
