@@ -5,42 +5,50 @@ import Mail from '../../lib/Mail';
 import Deliveryman from '../models/Deliveryman';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
+import DeliveryProblem from '../models/DeliveryProblem';
 
 class DeliveryController {
   async index(req, res) {
-    const hasSearch = req.query.q;
-    let deliverymans;
-    if (hasSearch) {
-      deliverymans = await Delivery.findAll({
-        where: {
-          product: {
-            [Op.iLike]: `%${req.query.q}%`,
-          },
+    const search = req.query.q || '';
+    const page = req.query.page || '1';
+    const filter = req.query.filter || 'all';
+    const itemsPerPage = req.query.itemsPerPage || '10';
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
+    const where = {
+      product: {
+        [Op.iLike]: `%${search}%`,
+      },
+    };
+    const items = await Delivery.findAll({
+      offset,
+      limit: Number(itemsPerPage),
+      where,
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          include: [{ model: File, as: 'avatar' }],
         },
-        include: [
-          {
-            model: Deliveryman,
-            as: 'deliveryman',
-            include: [{ model: File, as: 'avatar' }],
-          },
-          { model: Recipient, as: 'recipient' },
-          { model: File, as: 'signature' },
-        ],
-      });
-    } else {
-      deliverymans = await Delivery.findAll({
-        include: [
-          {
-            model: Deliveryman,
-            as: 'deliveryman',
-            include: [{ model: File, as: 'avatar' }],
-          },
-          { model: Recipient, as: 'recipient' },
-          { model: File, as: 'signature' },
-        ],
-      });
-    }
-    return res.json(deliverymans);
+        { model: Recipient, as: 'recipient' },
+        { model: File, as: 'signature' },
+        ...(filter !== 'all'
+          ? [{ model: DeliveryProblem, as: 'problems', required: true }]
+          : []),
+      ],
+    });
+    const { count } = await Delivery.findAndCountAll({
+      where: {
+        product: {
+          [Op.iLike]: `%${search}%`,
+        },
+      },
+    });
+    const pages = Math.ceil(count / Number(itemsPerPage));
+    return res.json({
+      items,
+      pages,
+      currentPage: Number(page),
+    });
   }
 
   async show(req, res) {

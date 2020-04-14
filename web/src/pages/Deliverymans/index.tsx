@@ -7,14 +7,17 @@ import { IconedButton } from "-/components/Button";
 import useAwait from "-/utils/useAwait";
 import { getDeliverymans } from "-/services";
 import DeliverymansTable from "-/components/DeliverymansTable";
+import Pagination from "-/components/Pagination";
 
 const Deliverymans: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [data, setData] = React.useState<any>([]);
   const [search, setSearch] = React.useState("");
+  const [pages, setPages] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const searchParams = useThrottle(search, 1000);
   const getSearchedDeliverymans = React.useCallback(
-    getDeliverymans(searchParams),
-    [searchParams]
+    getDeliverymans({ search: searchParams, page: currentPage }),
+    [searchParams, currentPage]
   );
   const handleChange = e => {
     setSearch(e.target.value);
@@ -24,7 +27,8 @@ const Deliverymans: React.FC<RouteComponentProps> = ({ navigate }) => {
     const fn = async () => {
       try {
         const response = await fetch();
-        setData(response.data);
+        setData(response.data.items);
+        setPages(response.data.pages);
       } catch (err) {
         console.error(err);
       }
@@ -52,6 +56,13 @@ const Deliverymans: React.FC<RouteComponentProps> = ({ navigate }) => {
         </IconedButton>
       </TopSection>
       <DeliverymansTable data={data} loading={loading} />
+      <Pagination
+        pages={pages}
+        setter={e => {
+          setCurrentPage(e);
+        }}
+        currentPage={currentPage}
+      />
     </Background>
   );
 };

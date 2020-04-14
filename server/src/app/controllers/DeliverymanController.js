@@ -5,23 +5,27 @@ import File from '../models/File';
 
 class DeliverymanController {
   async index(req, res) {
-    const hasSearch = req.query.q;
-    let deliverymans;
-    if (hasSearch) {
-      deliverymans = await Deliveryman.findAll({
-        where: {
-          name: {
-            [Op.iLike]: `%${req.query.q}%`,
-          },
+    const search = req.query.q || '';
+    const page = req.query.page || '1';
+    const itemsPerPage = req.query.itemsPerPage || '10';
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
+    const items = await Deliveryman.findAll({
+      offset,
+      limit: Number(itemsPerPage),
+      where: {
+        name: {
+          [Op.iLike]: `%${search}%`,
         },
-        include: [{ model: File, as: 'avatar' }],
-      });
-    } else {
-      deliverymans = await Deliveryman.findAll({
-        include: [{ model: File, as: 'avatar' }],
-      });
-    }
-    return res.json(deliverymans);
+      },
+      include: [{ model: File, as: 'avatar' }],
+    });
+    const { count } = await Deliveryman.findAndCountAll();
+    const pages = Math.ceil(count / Number(itemsPerPage));
+    return res.json({
+      items,
+      pages,
+      currentPage: Number(page),
+    });
   }
 
   async show(req, res) {

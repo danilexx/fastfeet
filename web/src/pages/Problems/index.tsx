@@ -4,15 +4,23 @@ import { Background, Header } from "-/components/styles";
 import useAwait from "-/utils/useAwait";
 import { getProblems } from "-/services";
 import ProblemsTable from "-/components/ProblemsTable";
+import Pagination from "-/components/Pagination";
 
 const Problems: React.FC<RouteComponentProps> = () => {
   const [data, setData] = React.useState<any>([]);
-  const [loading, fetch] = useAwait(getProblems);
+  const [pages, setPages] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const getPagedProblems = React.useCallback(() => getProblems(currentPage), [
+    currentPage,
+  ]);
+  const [loading, fetch] = useAwait(getPagedProblems);
   React.useEffect(() => {
     const fn = async () => {
       try {
         const response = await fetch();
-        setData(response.data);
+        console.log(response);
+        setData(response.data.items);
+        setPages(response.data.pages);
       } catch (err) {
         console.error(err);
       }
@@ -23,6 +31,13 @@ const Problems: React.FC<RouteComponentProps> = () => {
     <Background>
       <Header>Gerenciando Problemas</Header>
       <ProblemsTable data={data} loading={loading} />
+      <Pagination
+        pages={pages}
+        setter={e => {
+          setCurrentPage(e);
+        }}
+        currentPage={currentPage}
+      />
     </Background>
   );
 };

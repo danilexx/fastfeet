@@ -11,7 +11,7 @@ const DeliveriesTypeSwitch: React.FC<Props> = ({ onChange }) => {
     if (onChange) {
       onChange(selected);
     }
-  }, [selected]);
+  }, [selected, onChange]);
   return (
     <Container>
       <Type
@@ -34,4 +34,4 @@ const DeliveriesTypeSwitch: React.FC<Props> = ({ onChange }) => {
   );
 };
 
-export default DeliveriesTypeSwitch;
+export default React.memo(DeliveriesTypeSwitch);

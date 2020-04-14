@@ -14,10 +14,14 @@ import Pagination from "-/components/Pagination";
 const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [data, setData] = React.useState<any>([]);
   const [search, setSearch] = React.useState("");
+  const [filter, setFilter] = React.useState("all");
+  const [pages, setPages] = React.useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const searchParams = useThrottle(search, 1000);
-  const getSearchedDeliveries = React.useCallback(getDeliveries(searchParams), [
-    searchParams,
-  ]);
+  const getSearchedDeliveries = React.useCallback(
+    getDeliveries({ search: searchParams, filter, page: currentPage }),
+    [searchParams, filter, currentPage]
+  );
   const handleChange = e => {
     setSearch(e.target.value);
   };
@@ -26,13 +30,24 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
     const fn = async () => {
       try {
         const response = await fetch();
-        setData(response.data);
+        setData(response.data.items);
+        setPages(response.data.pages);
       } catch (err) {
         console.error(err);
       }
     };
     fn();
   }, [setData, fetch]);
+  const handlePagination = React.useCallback(
+    e => {
+      setCurrentPage(e);
+    },
+    [setCurrentPage]
+  );
+  const handleTypeSwitch = React.useCallback(e => {
+    setCurrentPage(1);
+    setFilter(e);
+  }, []);
   return (
     <Background>
       <Header>Gerenciando Encomendas</Header>
@@ -44,7 +59,7 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
             onChange={handleChange}
             placeholder="Buscar por encomendas"
           />
-          <DeliveriesTypeSwitch />
+          <DeliveriesTypeSwitch onChange={handleTypeSwitch} />
         </ListActions>
         <IconedButton
           onClick={() => {
@@ -57,7 +72,11 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
         </IconedButton>
       </TopSection>
       <DeliveriesTable data={data} loading={loading} />
-      <Pagination pages={1} />
+      <Pagination
+        pages={pages}
+        setter={handlePagination}
+        currentPage={currentPage}
+      />
     </Background>
   );
 };

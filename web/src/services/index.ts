@@ -90,8 +90,19 @@ export const createDelivery = createAxiosRequest<
   }
 >(`/deliveries`, "post");
 
-export const getDeliveries = (search: string) =>
-  createAxiosRequest<DeliveryModel[], any>(`/deliveries?q=${search}`, "get");
+export const getDeliveries = ({
+  search,
+  filter,
+  page,
+}: {
+  search: string;
+  filter: string;
+  page: number;
+}) =>
+  createAxiosRequest<
+    { items: DeliveryModel[]; currentPage: number; pages: number },
+    any
+  >(`/deliveries?q=${search}&filter=${filter}&page=${page}`, "get");
 
 export const updateDelivery = (deliveryId: number) =>
   createAxiosRequest<DeliveryModel, Partial<DeliveryModel>>(
@@ -112,11 +123,17 @@ export const createDeliveryman = createAxiosRequest<
   DeliveryManModel
 >(`/deliverymans`, "post");
 
-export const getDeliverymans = (search: string) =>
-  createAxiosRequest<DeliveryManModel[], any>(
-    `/deliverymans?q=${search}`,
-    "get"
-  );
+export const getDeliverymans = ({
+  search,
+  page,
+}: {
+  search: string;
+  page: number;
+}) =>
+  createAxiosRequest<
+    { items: DeliveryManModel[]; currentPage: number; pages: number },
+    any
+  >(`/deliverymans?q=${search}&page=${page}`, "get");
 
 export const updateDeliveryman = (deliverymanId: number) =>
   createAxiosRequest<DeliveryManModel, DeliveryManModel>(
@@ -134,8 +151,17 @@ export const createRecipient = createAxiosRequest<
   RecipientModel
 >(`/recipients`, "post");
 
-export const getRecipients = (search: string) =>
-  createAxiosRequest<RecipientModel[], any>(`/recipients?q=${search}`, "get");
+export const getRecipients = ({
+  search,
+  page,
+}: {
+  search: string;
+  page: number;
+}) =>
+  createAxiosRequest<
+    { items: RecipientModel[]; currentPage: number; pages: number },
+    any
+  >(`/recipients?q=${search}&page=${page}`, "get");
 
 export const updateRecipient = (recipientId: number) =>
   createAxiosRequest<RecipientModel, RecipientModel>(
@@ -146,7 +172,7 @@ export const updateRecipient = (recipientId: number) =>
 export const deleteRecipient = (recipientId: number) =>
   createAxiosRequest(`/recipients/${recipientId}`, "delete");
 
-export const getProblems = createAxiosRequest<ProblemModel[], any>(
-  `/problems`,
-  "get"
-);
+export const getProblems = page =>
+  api.get<{ items: ProblemModel[]; pages: number; currentPage: number }>(
+    `/problems?page=${page}`
+  );

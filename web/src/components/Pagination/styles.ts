@@ -3,6 +3,8 @@ import styled, { css } from "-/lib/StyledComponents";
 export const Pages = styled.div`
   display: flex;
   flex-direction: row;
+  margin: 1.5rem 0;
+  justify-content: center;
 `;
 
 const commonStyles = css`

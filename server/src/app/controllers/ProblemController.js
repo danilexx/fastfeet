@@ -6,7 +6,12 @@ import Mail from '../../lib/Mail';
 
 class ProblemController {
   async index(req, res) {
-    const deliveryProblems = await DeliveryProblem.findAll({
+    const page = req.query.page || '1';
+    const itemsPerPage = req.query.itemsPerPage || '10';
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
+    const items = await DeliveryProblem.findAll({
+      offset,
+      limit: Number(itemsPerPage),
       include: [
         {
           model: Delivery,
@@ -14,7 +19,13 @@ class ProblemController {
         },
       ],
     });
-    return res.json(deliveryProblems);
+    const { count } = await DeliveryProblem.findAndCountAll();
+    const pages = Math.ceil(count / Number(itemsPerPage));
+    return res.json({
+      items,
+      pages,
+      currentPage: Number(page),
+    });
   }
 
   async destroy(req, res) {

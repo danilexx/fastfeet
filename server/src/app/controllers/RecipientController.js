@@ -31,20 +31,22 @@ class RecipientController {
   }
 
   async index(req, res) {
-    const hasSearch = req.query.q;
-    let recipients;
-    if (hasSearch) {
-      recipients = await Recipient.findAll({
-        where: {
-          name: {
-            [Op.iLike]: `%${req.query.q}%`,
-          },
+    const search = req.query.q;
+    const page = req.query.page || '1';
+    const itemsPerPage = req.query.itemsPerPage || '10';
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
+    const items = await Recipient.findAll({
+      offset,
+      limit: Number(itemsPerPage),
+      where: {
+        name: {
+          [Op.iLike]: `%${search}%`,
         },
-      });
-    } else {
-      recipients = await Recipient.findAll();
-    }
-    return res.json(recipients);
+      },
+    });
+    const { count } = await Recipient.findAndCountAll();
+    const pages = Math.ceil(count / Number(itemsPerPage));
+    return res.json({ items, currentPage: Number(page), pages });
   }
 
   async destroy(req, res) {
