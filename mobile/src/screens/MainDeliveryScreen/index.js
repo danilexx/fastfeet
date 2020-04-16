@@ -11,6 +11,7 @@ import {
   DeliveriesFilters,
   Filter,
   NoDeliveries,
+  Row,
 } from './styles';
 import DeliverymanPhoto from '../../components/DeliverymanPhoto';
 import { getDeliveries, getDoneDeliveries } from '../../services';
@@ -21,6 +22,17 @@ import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import getStatus from '../../utils/getStatus';
 import { useFocusEffect } from '@react-navigation/native';
+import { View, ActivityIndicator } from 'react-native';
+import { ThemeContext } from 'styled-components';
+
+const LoadingFooter = () => {
+  const theme = React.useContext(ThemeContext);
+  return (
+    <View style={{ display: 'flex', marginVertical: 10 }}>
+      <ActivityIndicator color={theme.primary} />
+    </View>
+  );
+};
 
 const MainDeliveriesScreen = () => {
   const navigation = useNavigation();
@@ -28,36 +40,50 @@ const MainDeliveriesScreen = () => {
   const info = useStoreState(state => state.deliveryman.info);
   const { name } = info;
   const [deliveriesType, setDeliveriesType] = React.useState('pending');
-  useFocusEffect(() => {
-    const fn = async () => {
-      const fetch =
-        deliveriesType === 'pending' ? getDeliveries : getDoneDeliveries;
-      const response = await fetch(info.id);
-      const newData = response.data.map(delivery => ({
-        id: delivery.id,
-        status: getStatus(delivery),
-        city: delivery.recipient.city,
-        date: format(new Date(delivery.created_at), 'dd/MM/yyyy'),
-        rest: delivery,
-      }));
-      setData(newData);
-    };
-    fn();
-  }, [info.id, deliveriesType]);
+  const [pages, setPages] = React.useState(pages);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  React.useEffect(() => {
+    setData([]);
+    setCurrentPage(1);
+  }, [deliveriesType]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fn = async () => {
+        const fetch =
+          deliveriesType === 'pending' ? getDeliveries : getDoneDeliveries;
+        const {
+          data: { pages: newPages, items },
+        } = await fetch({ id: info.id, currentPage });
+        const newData = items.map(delivery => ({
+          id: delivery.id,
+          status: getStatus(delivery),
+          city: delivery.recipient.city,
+          date: format(new Date(delivery.created_at), 'dd/MM/yyyy'),
+          rest: delivery,
+        }));
+        setPages(newPages);
+        setData(state => [...state, ...newData]);
+      };
+      fn();
+    }, [deliveriesType, currentPage, info.id]),
+    [deliveriesType, currentPage, info.id],
+  );
   return (
     <FilledContainer>
       <TopSection>
         <DeliverymanPhoto info={info} />
         <TextSection>
-          <WelcomeBackText>Bem vindo de volta,</WelcomeBackText>
+          <Row>
+            <WelcomeBackText>Bem vindo de volta, </WelcomeBackText>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Login');
+              }}>
+              <LogoutIcon />
+            </TouchableOpacity>
+          </Row>
           <DeliverymanName>{name}</DeliverymanName>
         </TextSection>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Login');
-          }}>
-          <LogoutIcon />
-        </TouchableOpacity>
       </TopSection>
       <Header>
         <HeaderText>Entregas</HeaderText>
@@ -84,6 +110,13 @@ const MainDeliveriesScreen = () => {
       )}
       <FlatList
         data={data}
+        onEndReached={() => {
+          if (currentPage < pages) {
+            setCurrentPage(page => page + 1);
+          }
+        }}
+        ListFooterComponent={LoadingFooter}
+        onEndReachedThreshold={0.1}
         keyExtractor={delivery => delivery.id.toString()}
         renderItem={({ item }) => <DeliveryCard delivery={item} />}
       />
@@ -91,4 +124,4 @@ const MainDeliveriesScreen = () => {
   );
 };
 
-export default MainDeliveriesScreen;
+export default React.memo(MainDeliveriesScreen);

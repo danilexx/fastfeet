@@ -36,6 +36,7 @@ const Login: React.FC<RouteComponentProps> = () => {
         alert("Erro na Requisição!");
         console.error(err);
       }
+      setLoading(false);
     }
   };
   return (

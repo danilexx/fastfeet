@@ -10,6 +10,7 @@ import { getDeliveries } from "-/services";
 import ListActions from "-/components/ListActions";
 import DeliveriesTypeSwitch from "-/components/DeliveriesTypeSwitch";
 import Pagination from "-/components/Pagination";
+import EmptyWarn from "-/components/EmptyWarn";
 
 const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [data, setData] = React.useState<any>([]);
@@ -71,7 +72,11 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
           Cadastrar
         </IconedButton>
       </TopSection>
-      <DeliveriesTable data={data} loading={loading} />
+      {data.length === 0 && loading === false ? (
+        <EmptyWarn>Nenhuma Entrega Cadastrada Ainda</EmptyWarn>
+      ) : (
+        <DeliveriesTable data={data} loading={loading} />
+      )}
       <Pagination
         pages={pages}
         setter={handlePagination}

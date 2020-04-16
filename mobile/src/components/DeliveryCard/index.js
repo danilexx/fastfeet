@@ -48,4 +48,4 @@ const DeliveryCard = ({ delivery }) => {
   );
 };
 
-export default DeliveryCard;
+export default React.memo(DeliveryCard);

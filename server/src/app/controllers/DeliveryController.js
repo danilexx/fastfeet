@@ -19,10 +19,11 @@ class DeliveryController {
         [Op.iLike]: `%${search}%`,
       },
     };
-    const items = await Delivery.findAll({
+    const { rows: items, count } = await Delivery.findAndCountAll({
       offset,
       limit: Number(itemsPerPage),
       where,
+      distinct: true,
       include: [
         {
           model: Deliveryman,
@@ -35,13 +36,6 @@ class DeliveryController {
           ? [{ model: DeliveryProblem, as: 'problems', required: true }]
           : []),
       ],
-    });
-    const { count } = await Delivery.findAndCountAll({
-      where: {
-        product: {
-          [Op.iLike]: `%${search}%`,
-        },
-      },
     });
     const pages = Math.ceil(count / Number(itemsPerPage));
     return res.json({

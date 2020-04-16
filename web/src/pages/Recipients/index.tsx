@@ -8,6 +8,7 @@ import useAwait from "-/utils/useAwait";
 import { getRecipients } from "-/services";
 import RecipientsTable from "-/components/RecipientsTable";
 import Pagination from "-/components/Pagination";
+import EmptyWarn from "-/components/EmptyWarn";
 
 const Recipients: React.FC<RouteComponentProps> = ({ children }) => {
   const [data, setData] = React.useState<any>([]);
@@ -54,7 +55,11 @@ const Recipients: React.FC<RouteComponentProps> = ({ children }) => {
             Cadastrar
           </IconedButton>
         </TopSection>
-        <RecipientsTable data={data} loading={loading} />
+        {data.length === 0 && loading === false ? (
+          <EmptyWarn>Nenhum Destinatário Cadastrado Ainda</EmptyWarn>
+        ) : (
+          <RecipientsTable data={data} loading={loading} />
+        )}
         <Pagination
           pages={pages}
           setter={e => {

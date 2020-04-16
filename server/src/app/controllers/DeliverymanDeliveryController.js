@@ -8,11 +8,17 @@ import Recipient from '../models/Recipient';
 class DeliverymanDeliveryController {
   async index(req, res) {
     const { deliveryman_id } = req.params;
-    const deliveries = await Delivery.findAll({
+    const page = req.query.page || '1';
+    const itemsPerPage = req.query.itemsPerPage || '10';
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
+
+    const { rows: items, count } = await Delivery.findAndCountAll({
+      offset,
+      limit: itemsPerPage,
       where: { deliveryman_id, canceled_at: null, end_date: null },
       include: [{ model: Recipient, as: 'recipient' }],
     });
-    return res.json(deliveries);
+    return res.json({ items, pages: Math.ceil(count / Number(itemsPerPage)) });
   }
 
   async show(req, res) {

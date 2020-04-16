@@ -69,6 +69,11 @@ const createAxiosRequest = <T, D = any>(
   fn.url = url;
   return fn;
 };
+
+const getAuth = () => ({
+  headers: { Authorization: `Bearer ${cookie.load("token")}` },
+});
+
 export const createSession = createAxiosRequest<UserModel, LoginModel>(
   "/sessions",
   "post"
@@ -174,5 +179,6 @@ export const deleteRecipient = (recipientId: number) =>
 
 export const getProblems = page =>
   api.get<{ items: ProblemModel[]; pages: number; currentPage: number }>(
-    `/problems?page=${page}`
+    `/problems?page=${page}`,
+    getAuth()
   );

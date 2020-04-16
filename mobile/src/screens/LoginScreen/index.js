@@ -7,7 +7,7 @@ import { useStoreActions } from 'easy-peasy';
 
 const schema = Yup.object().shape({
   id: Yup.string()
-    .required()
+    .required('Obrigatorio')
     .test('number', 'Não é um numero inteiro', value => !isNaN(value)),
 });
 

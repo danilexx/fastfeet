@@ -8,6 +8,7 @@ import useAwait from "-/utils/useAwait";
 import { getDeliverymans } from "-/services";
 import DeliverymansTable from "-/components/DeliverymansTable";
 import Pagination from "-/components/Pagination";
+import EmptyWarn from "-/components/EmptyWarn";
 
 const Deliverymans: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [data, setData] = React.useState<any>([]);
@@ -55,7 +56,11 @@ const Deliverymans: React.FC<RouteComponentProps> = ({ navigate }) => {
           Cadastrar
         </IconedButton>
       </TopSection>
-      <DeliverymansTable data={data} loading={loading} />
+      {data.length === 0 && loading === false ? (
+        <EmptyWarn>Nenhum Entregador Cadastrado Ainda</EmptyWarn>
+      ) : (
+        <DeliverymansTable data={data} loading={loading} />
+      )}
       <Pagination
         pages={pages}
         setter={e => {

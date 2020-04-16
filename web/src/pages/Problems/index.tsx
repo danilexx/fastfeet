@@ -5,6 +5,7 @@ import useAwait from "-/utils/useAwait";
 import { getProblems } from "-/services";
 import ProblemsTable from "-/components/ProblemsTable";
 import Pagination from "-/components/Pagination";
+import EmptyWarn from "-/components/EmptyWarn";
 
 const Problems: React.FC<RouteComponentProps> = () => {
   const [data, setData] = React.useState<any>([]);
@@ -30,7 +31,12 @@ const Problems: React.FC<RouteComponentProps> = () => {
   return (
     <Background>
       <Header>Gerenciando Problemas</Header>
-      <ProblemsTable data={data} loading={loading} />
+      {data.length === 0 && loading === false ? (
+        <EmptyWarn>Nenhum Problema Cadastrado Ainda</EmptyWarn>
+      ) : (
+        <ProblemsTable data={data} loading={loading} />
+      )}
+
       <Pagination
         pages={pages}
         setter={e => {

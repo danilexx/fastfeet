@@ -7,6 +7,13 @@ export const TopSection = styled.View`
   margin: 20px auto;
   justify-content: space-between;
 `;
+
+export const Row = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* justify-content: space-between; */
+`;
 export const TextSection = styled.View`
   flex-direction: column;
 `;
@@ -16,6 +23,7 @@ const commonStyles = styled.Text`
 `;
 export const WelcomeBackText = styled(commonStyles)`
   color: ${props => props.theme.gray[1]};
+  flex: 1;
 `;
 export const DeliverymanName = styled(commonStyles)`
   font-size: 30px;
@@ -28,7 +36,7 @@ export const LogoutIcon = styled(Icon).attrs(props => ({
   size: 30,
   color: props.theme.actions.danger,
 }))`
-  margin: 10px;
+  margin: 0 10px;
 `;
 
 export const Header = styled.View`
