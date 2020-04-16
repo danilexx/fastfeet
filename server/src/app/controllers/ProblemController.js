@@ -2,7 +2,8 @@ import moment from 'moment';
 import DeliveryProblem from '../models/DeliveryProblem';
 import Delivery from '../models/Delivery';
 import Deliveryman from '../models/Deliveryman';
-import Mail from '../../lib/Mail';
+import CancellationMail from '../jobs/CancellationMail';
+import Queue from '../../lib/Queue';
 
 class ProblemController {
   async index(req, res) {
@@ -45,10 +46,10 @@ class ProblemController {
     });
     await problem.destroy();
     const { deliveryman } = delivery;
-    await Mail.sendMail({
-      to: `${deliveryman.name} <${deliveryman.email}>`,
-      subject: `Delivery #${delivery.id} Cancelled`,
-      text: `Dear ${deliveryman.name}, the delivery with recipient's product name ${delivery.product} has been canceled due to: ${problem.description}`,
+    await Queue.add(CancellationMail.key, {
+      delivery,
+      problem,
+      deliveryman,
     });
     return res.json({
       ok: true,
