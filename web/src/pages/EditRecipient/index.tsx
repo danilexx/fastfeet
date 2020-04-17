@@ -2,6 +2,7 @@ import * as React from "react";
 import { RouteComponentProps } from "@reach/router";
 import { FormHandles } from "@unform/core";
 import * as Yup from "yup";
+import showError from "-/utils/showError";
 import {
   Background,
   Header,
@@ -60,7 +61,7 @@ const EditRecipient: React.FC<RouteComponentProps> = ({
       }
     } catch (err) {
       toggle(false);
-      console.error(err);
+      showError(err);
     }
   };
   const submitForm = () => {

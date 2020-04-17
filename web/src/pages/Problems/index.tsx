@@ -1,5 +1,6 @@
 import * as React from "react";
 import { RouteComponentProps } from "@reach/router";
+import showError from "-/utils/showError";
 import { Background, Header } from "-/components/styles";
 import useAwait from "-/utils/useAwait";
 import { getProblems } from "-/services";
@@ -19,11 +20,10 @@ const Problems: React.FC<RouteComponentProps> = () => {
     const fn = async () => {
       try {
         const response = await fetch();
-        console.log(response);
         setData(response.data.items);
         setPages(response.data.pages);
       } catch (err) {
-        console.error(err);
+        showError(err);
       }
     };
     fn();

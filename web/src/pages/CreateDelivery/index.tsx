@@ -19,8 +19,15 @@ import AsyncSelect from "-/components/AsyncSelect";
 const prepareAsyncOptions = fn => async inputValue =>
   new Promise(resolve => {
     (async () => {
-      const response = await fn(inputValue)();
-      const data = response.data.map(e => ({ value: e.id, label: e.name }));
+      const response = await fn({
+        search: inputValue,
+        page: 1,
+        itemsPerPage: 99,
+      });
+      const data = response.data.items.map(e => ({
+        value: e.id,
+        label: e.name,
+      }));
       resolve(data);
     })();
   });

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import { useThrottle } from "react-use";
+import showError from "-/utils/showError";
 import { Background, TopSection, Header } from "-/components/styles";
 import SearchBar from "-/components/SearchBar";
 import { IconedButton } from "-/components/Button";
@@ -17,7 +18,7 @@ const Recipients: React.FC<RouteComponentProps> = ({ children }) => {
   const [pages, setPages] = React.useState(1);
   const [currentPage, setCurrentPage] = React.useState(1);
   const getSearchedRecipient = React.useCallback(
-    getRecipients({ search: searchParams, page: currentPage }),
+    () => getRecipients({ search: searchParams, page: currentPage }),
     [searchParams, currentPage]
   );
   const handleChange = e => {
@@ -31,7 +32,7 @@ const Recipients: React.FC<RouteComponentProps> = ({ children }) => {
         setData(response.data.items);
         setPages(response.data.pages);
       } catch (err) {
-        console.error(err);
+        showError(err);
       }
     };
     fn();

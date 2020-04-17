@@ -32,7 +32,7 @@ const ProblemsTable: React.FC<{
         `Você realmente deseja cancelar a entrega ${currentRow.delivery}?`
       );
       if (isConfirmed) {
-        cancelDelivery(currentRow.rest.id)();
+        cancelDelivery(currentRow.rest.id);
         methods.removeAt(currentIndex);
       }
     },

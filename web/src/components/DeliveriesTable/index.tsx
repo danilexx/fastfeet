@@ -40,7 +40,7 @@ const DeliveriesTable: React.FC<{
       );
       if (isConfirmed) {
         methods.removeAt(currentIndex);
-        deleteDelivery(currentRow.id)();
+        deleteDelivery(currentRow.id);
       }
     },
     [methods]

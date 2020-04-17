@@ -11,6 +11,7 @@ import { createDeliveryman, uploadImage } from "-/services";
 import { deliverymanValidationSchema } from "-/utils/validationSchemas";
 import ImageInput from "-/components/ImageInput";
 import getFileFormData from "-/utils/getFileFormData";
+import showError from "-/utils/showError";
 
 Yup.setLocale({
   mixed: {
@@ -49,7 +50,7 @@ const CreateDeliveryman: React.FC<RouteComponentProps> = ({ navigate }) => {
       }
     } catch (err) {
       toggle(false);
-      console.error(err);
+      showError(err);
     }
   };
   const submitForm = () => {

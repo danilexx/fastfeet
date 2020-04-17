@@ -29,7 +29,7 @@ const DeliverymansTable: React.FC<{
         `Você realmente deseja excluir o entregador ${currentRow.id}?`
       );
       if (isConfirmed) {
-        deleteDeliveryMan(currentRow.id)();
+        deleteDeliveryMan(currentRow.id);
         methods.removeAt(currentIndex);
       }
     },

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
+import axios from "axios";
 import cookie from "react-cookies";
 import {
   UserModel,
@@ -19,81 +19,24 @@ export const api = axios.create({
       : {}),
   },
 });
-type get = <T = any, R = AxiosResponse<T>>(
-  url: string,
-  config?: AxiosRequestConfig
-) => Promise<R>;
-type post = <T = any, R = AxiosResponse<T>>(
-  url: string,
-  data?: any,
-  config?: AxiosRequestConfig
-) => Promise<R>;
-
-type Method = get & post;
-const selectApiMethod = (method: string = "get"): Method => {
-  switch (method) {
-    case "get": {
-      return api.get;
-    }
-    case "post": {
-      return api.post;
-    }
-    case "put": {
-      return api.put;
-    }
-    case "delete": {
-      return api.delete;
-    }
-    default:
-      return api.get;
-  }
-};
-const createAxiosRequest = <T, D = any>(
-  url: string,
-  method: string = "get"
-) => {
-  const fn = (
-    data?: D,
-    extraConfig?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> => {
-    const baseConfig = {
-      headers: {
-        Authorization: `Bearer ${cookie.load("token")}`,
-      },
-    };
-    const config = { ...baseConfig, ...extraConfig };
-    return data
-      ? selectApiMethod(method)(url, data, config)
-      : selectApiMethod(method)(url, config);
-  };
-  fn.url = url;
-  return fn;
-};
 
 const getAuth = () => ({
   headers: { Authorization: `Bearer ${cookie.load("token")}` },
 });
 
-export const createSession = createAxiosRequest<UserModel, LoginModel>(
-  "/sessions",
-  "post"
-);
+export const createSession = (data: LoginModel) =>
+  api.post<UserModel>("/sessions", data, getAuth());
 
-export const uploadImage = createAxiosRequest<
-  { path: string; id: number },
-  FormData
->(`/files`, "post");
+export const uploadImage = (form: FormData) =>
+  api.post<{ path: string; id: number }>("/files", form, getAuth());
 
 // ---- Requisições da Delivery
 
-export const createDelivery = createAxiosRequest<
-  DeliveryModel,
-  {
-    deliveryman_id: number;
-    recipient_id: number;
-    product: string;
-  }
->(`/deliveries`, "post");
+export const createDelivery = (data: {
+  deliveryman_id: number;
+  recipient_id: number;
+  product: string;
+}) => api.post<DeliveryModel>(`/deliveries`, data, getAuth());
 
 export const getDeliveries = ({
   search,
@@ -104,78 +47,72 @@ export const getDeliveries = ({
   filter: string;
   page: number;
 }) =>
-  createAxiosRequest<
-    { items: DeliveryModel[]; currentPage: number; pages: number },
-    any
-  >(`/deliveries?q=${search}&filter=${filter}&page=${page}`, "get");
-
-export const updateDelivery = (deliveryId: number) =>
-  createAxiosRequest<DeliveryModel, Partial<DeliveryModel>>(
-    `deliveries/${deliveryId}`,
-    "put"
+  api.get<{ items: DeliveryModel[]; currentPage: number; pages: number }>(
+    `/deliveries?q=${search}&filter=${filter}&page=${page}`,
+    getAuth()
   );
 
+export const updateDelivery = (deliveryId: number) => (
+  data: Partial<DeliveryModel>
+) => api.put(`deliveries/${deliveryId}`, data, getAuth());
+
 export const deleteDelivery = (deliveryId: number) =>
-  createAxiosRequest(`/deliveries/${deliveryId}`, "delete");
+  api.delete(`/deliveries/${deliveryId}`, getAuth());
 
 export const cancelDelivery = (problemId: number) =>
-  createAxiosRequest(`/problems/${problemId}/cancel-delivery`, "delete");
+  api.delete(`/problems/${problemId}/cancel-delivery`, getAuth());
 
 // ---- Requisições do Deliveryman
 
-export const createDeliveryman = createAxiosRequest<
-  DeliveryManModel,
-  DeliveryManModel
->(`/deliverymans`, "post");
+export const createDeliveryman = (data: DeliveryManModel) =>
+  api.post<DeliveryManModel>(`/deliverymans`, data, getAuth());
 
 export const getDeliverymans = ({
   search,
   page,
+  itemsPerPage = 10,
 }: {
   search: string;
   page: number;
+  itemsPerPage?: number;
 }) =>
-  createAxiosRequest<
-    { items: DeliveryManModel[]; currentPage: number; pages: number },
-    any
-  >(`/deliverymans?q=${search}&page=${page}`, "get");
-
-export const updateDeliveryman = (deliverymanId: number) =>
-  createAxiosRequest<DeliveryManModel, DeliveryManModel>(
-    `deliverymans/${deliverymanId}`,
-    "put"
+  api.get<{ items: DeliveryManModel[]; currentPage: number; pages: number }>(
+    `/deliverymans?q=${search}&page=${page}&=itemsPerPage=${itemsPerPage}`,
+    getAuth()
   );
 
+export const updateDeliveryman = (deliverymanId: number) => (
+  data: DeliveryManModel
+) =>
+  api.put<DeliveryManModel>(`deliverymans/${deliverymanId}`, data, getAuth());
+
 export const deleteDeliveryMan = (deliverymanId: number) =>
-  createAxiosRequest(`/deliverymans/${deliverymanId}`, "delete");
+  api.delete(`/deliverymans/${deliverymanId}`, getAuth());
 
 // ---- Requisições do Recipient
 
-export const createRecipient = createAxiosRequest<
-  RecipientModel,
-  RecipientModel
->(`/recipients`, "post");
+export const createRecipient = (data: RecipientModel) =>
+  api.post<RecipientModel>("/recipients", data, getAuth());
 
 export const getRecipients = ({
   search,
   page,
+  itemsPerPage = 10,
 }: {
   search: string;
   page: number;
+  itemsPerPage?: number;
 }) =>
-  createAxiosRequest<
-    { items: RecipientModel[]; currentPage: number; pages: number },
-    any
-  >(`/recipients?q=${search}&page=${page}`, "get");
-
-export const updateRecipient = (recipientId: number) =>
-  createAxiosRequest<RecipientModel, RecipientModel>(
-    `recipients/${recipientId}`,
-    "put"
+  api.get<{ items: RecipientModel[]; currentPage: number; pages: number }>(
+    `/recipients?q=${search}&page=${page}&itemsPerPage=${itemsPerPage}`,
+    getAuth()
   );
+export const updateRecipient = (recipientId: number) => (
+  data: RecipientModel
+) => api.put<RecipientModel>(`/recipients/${recipientId}`, data, getAuth());
 
 export const deleteRecipient = (recipientId: number) =>
-  createAxiosRequest(`/recipients/${recipientId}`, "delete");
+  api.delete(`/recipients/${recipientId}`, getAuth());
 
 export const getProblems = page =>
   api.get<{ items: ProblemModel[]; pages: number; currentPage: number }>(

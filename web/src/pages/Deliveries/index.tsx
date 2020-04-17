@@ -1,6 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps } from "@reach/router";
 import { useThrottle } from "react-use";
+import showError from "-/utils/showError";
 import { Background, TopSection, Header } from "-/components/styles";
 import SearchBar from "-/components/SearchBar";
 import DeliveriesTable from "-/components/DeliveriesTable";
@@ -20,7 +21,7 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const searchParams = useThrottle(search, 1000);
   const getSearchedDeliveries = React.useCallback(
-    getDeliveries({ search: searchParams, filter, page: currentPage }),
+    () => getDeliveries({ search: searchParams, filter, page: currentPage }),
     [searchParams, filter, currentPage]
   );
   const handleChange = e => {
@@ -34,7 +35,7 @@ const Deliveries: React.FC<RouteComponentProps> = ({ navigate }) => {
         setData(response.data.items);
         setPages(response.data.pages);
       } catch (err) {
-        console.error(err);
+        showError(err);
       }
     };
     fn();

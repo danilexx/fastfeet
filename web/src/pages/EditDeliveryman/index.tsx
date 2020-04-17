@@ -2,6 +2,7 @@ import * as React from "react";
 import { RouteComponentProps } from "@reach/router";
 import { FormHandles } from "@unform/core";
 import * as Yup from "yup";
+import showError from "-/utils/showError";
 import { Background, Header, FormSection, Buttons } from "-/components/styles";
 import Input from "-/components/Input";
 import { IconedButton, LoadingIconedButton } from "-/components/Button";
@@ -63,7 +64,7 @@ const EditDeliveryman: React.FC<RouteComponentProps> = ({
       }
     } catch (err) {
       toggle(false);
-      console.error(err);
+      showError(err);
     }
   };
   const submitForm = () => {

@@ -28,7 +28,7 @@ const RecipientsTable: React.FC<{
         `Você realmente deseja excluir o destinatario ${currentRow.id}?`
       );
       if (isConfirmed) {
-        deleteRecipient(currentRow.id)();
+        deleteRecipient(currentRow.id);
         methods.removeAt(currentIndex);
       }
     },

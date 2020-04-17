@@ -1,6 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, navigate } from "@reach/router";
 import { SubmitHandler, FormHandles } from "@unform/core";
+import showError from "-/utils/showError";
 import { Container, FormContainer, Logo } from "./styles";
 import Input from "-/components/Input";
 import { LoadingButton } from "-/components/Button";
@@ -33,8 +34,7 @@ const Login: React.FC<RouteComponentProps> = () => {
         navigate("dashboard/encomendas");
       } catch (err) {
         setLoading(false);
-        alert("Erro na Requisição!");
-        console.error(err);
+        showError(err);
       }
       setLoading(false);
     }

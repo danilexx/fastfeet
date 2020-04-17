@@ -2,6 +2,7 @@ import * as React from "react";
 import { RouteComponentProps } from "@reach/router";
 import { FormHandles } from "@unform/core";
 import * as Yup from "yup";
+import showError from "-/utils/showError";
 import {
   Background,
   Header,
@@ -49,7 +50,7 @@ const CreateRecipient: React.FC<RouteComponentProps> = ({ navigate }) => {
       }
     } catch (err) {
       toggle(false);
-      console.error(err);
+      showError(err);
     }
   };
   const submitForm = () => {
