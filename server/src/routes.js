@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
+import Brute from 'express-brute';
+import BruteRedis from 'express-brute-redis';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import RecipientController from './app/controllers/RecipientController';
@@ -12,12 +14,15 @@ import DeliveryProblemController from './app/controllers/DeliveryProblemControll
 import ProblemController from './app/controllers/ProblemController';
 import multerConfig from './config/multer';
 import FileController from './app/controllers/FileController';
+import redis from './config/redis';
 
 const routes = new Router();
+const bruteStore = new BruteRedis(redis);
+const bruteForce = new Brute(bruteStore);
 
 routes.post('/users', UserController.store);
 
-routes.post('/sessions', SessionController.store);
+routes.post('/sessions', bruteForce.prevent, SessionController.store);
 routes.get('/deliverymans/:id', DeliverymanController.show);
 
 routes.get(
