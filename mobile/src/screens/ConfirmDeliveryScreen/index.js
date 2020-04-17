@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { Error } from '../../components/Input/styles';
 import {
   CameraView,
@@ -55,7 +55,7 @@ const ConfirmDeliveryScreen = ({ navigation, route }) => {
         });
         navigation.goBack();
       } catch (err) {
-        console.error(err);
+        Alert.alert(err.response?.data?.error);
       }
 
       setError('');

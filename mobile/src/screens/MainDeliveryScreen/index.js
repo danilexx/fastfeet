@@ -75,7 +75,6 @@ const MainDeliveriesScreen = () => {
     }, [deliveriesType, info.id]),
   );
   const loadMore = React.useCallback(() => {
-    console.log(currentPage, pages);
     if (currentPage < pages) {
       const fetchDeliveries = async ({ type, id, page }) => {
         const fetch = type === 'pending' ? getDeliveries : getDoneDeliveries;
