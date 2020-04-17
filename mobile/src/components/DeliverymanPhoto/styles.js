@@ -10,7 +10,6 @@ const commonStyles = css`
   justify-content: center;
   align-items: center;
   padding: 10px;
-  /* margin: 20px auto; */
 `;
 
 export const Photo = styled(Image)`

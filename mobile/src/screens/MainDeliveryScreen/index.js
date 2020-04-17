@@ -24,6 +24,7 @@ import getStatus from '../../utils/getStatus';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, ActivityIndicator } from 'react-native';
 import { ThemeContext } from 'styled-components';
+import useBoolean from 'react-use/lib/useBoolean';
 
 const LoadingFooter = () => {
   const theme = React.useContext(ThemeContext);
@@ -34,6 +35,15 @@ const LoadingFooter = () => {
   );
 };
 
+const formatItems = array =>
+  array.map(delivery => ({
+    id: delivery.id,
+    status: getStatus(delivery),
+    city: delivery.recipient.city,
+    date: format(new Date(delivery.created_at), 'dd/MM/yyyy'),
+    rest: delivery,
+  }));
+
 const MainDeliveriesScreen = () => {
   const navigation = useNavigation();
   const [data, setData] = React.useState([]);
@@ -42,36 +52,48 @@ const MainDeliveriesScreen = () => {
   const [deliveriesType, setDeliveriesType] = React.useState('pending');
   const [pages, setPages] = React.useState(pages);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [hasMore, toggle] = useBoolean(false);
   React.useEffect(() => {
-    setData([]);
-    setCurrentPage(1);
-  }, [deliveriesType]);
+    if (currentPage < pages) {
+      toggle(true);
+    } else {
+      toggle(false);
+    }
+  }, [pages, currentPage, toggle]);
   useFocusEffect(
     React.useCallback(() => {
-      const fn = async () => {
-        const fetch =
-          deliveriesType === 'pending' ? getDeliveries : getDoneDeliveries;
+      const fetchDeliveries = async ({ type, id, page }) => {
+        const fetch = type === 'pending' ? getDeliveries : getDoneDeliveries;
         const {
           data: { pages: newPages, items },
-        } = await fetch({ id: info.id, currentPage });
-        const newData = items.map(delivery => ({
-          id: delivery.id,
-          status: getStatus(delivery),
-          city: delivery.recipient.city,
-          date: format(new Date(delivery.created_at), 'dd/MM/yyyy'),
-          rest: delivery,
-        }));
+        } = await fetch({ id, currentPage: page });
+        const newData = formatItems(items);
+        setPages(newPages);
+        setData(newData);
+      };
+      fetchDeliveries({ type: deliveriesType, id: info.id, page: 1 });
+    }, [deliveriesType, info.id]),
+  );
+  const loadMore = React.useCallback(() => {
+    console.log(currentPage, pages);
+    if (currentPage < pages) {
+      const fetchDeliveries = async ({ type, id, page }) => {
+        const fetch = type === 'pending' ? getDeliveries : getDoneDeliveries;
+        const {
+          data: { pages: newPages, items },
+        } = await fetch({ id, currentPage: page + 1 });
+        const newData = formatItems(items);
         setPages(newPages);
         setData(state => [...state, ...newData]);
+        setCurrentPage(page + 1);
       };
-      fn();
-    }, [deliveriesType, currentPage, info.id]),
-    [deliveriesType, currentPage, info.id],
-  );
+      fetchDeliveries({ type: deliveriesType, id: info.id, page: currentPage });
+    }
+  }, [deliveriesType, currentPage, info.id, pages]);
   return (
     <FilledContainer>
       <TopSection>
-        <DeliverymanPhoto info={info} />
+        <DeliverymanPhoto size={100} info={info} />
         <TextSection>
           <Row>
             <WelcomeBackText>Bem vindo de volta, </WelcomeBackText>
@@ -110,12 +132,8 @@ const MainDeliveriesScreen = () => {
       )}
       <FlatList
         data={data}
-        onEndReached={() => {
-          if (currentPage < pages) {
-            setCurrentPage(page => page + 1);
-          }
-        }}
-        ListFooterComponent={LoadingFooter}
+        onEndReached={loadMore}
+        ListFooterComponent={() => hasMore && <LoadingFooter />}
         onEndReachedThreshold={0.1}
         keyExtractor={delivery => delivery.id.toString()}
         renderItem={({ item }) => <DeliveryCard delivery={item} />}
