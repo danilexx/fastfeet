@@ -17,6 +17,7 @@ class DeliverymanDeliveryController {
       limit: itemsPerPage,
       where: { deliveryman_id, canceled_at: null, end_date: null },
       include: [{ model: Recipient, as: 'recipient' }],
+      order: [['start_date', 'ASC']],
     });
     return res.json({ items, pages: Math.ceil(count / Number(itemsPerPage)) });
   }

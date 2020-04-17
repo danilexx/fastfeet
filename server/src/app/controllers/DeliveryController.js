@@ -24,6 +24,10 @@ class DeliveryController {
       limit: Number(itemsPerPage),
       where,
       distinct: true,
+      order: [
+        ['end_date', 'DESC'],
+        ['start_date', 'ASC'],
+      ],
       include: [
         {
           model: Deliveryman,
