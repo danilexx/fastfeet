@@ -21,10 +21,10 @@ import { useStoreState } from 'easy-peasy';
 import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import getStatus from '../../utils/getStatus';
-import { useFocusEffect } from '@react-navigation/native';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, RefreshControl } from 'react-native';
 import { ThemeContext } from 'styled-components';
 import useBoolean from 'react-use/lib/useBoolean';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LoadingFooter = () => {
   const theme = React.useContext(ThemeContext);
@@ -60,20 +60,20 @@ const MainDeliveriesScreen = () => {
       toggle(false);
     }
   }, [pages, currentPage, toggle]);
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchDeliveries = async ({ type, id, page }) => {
-        const fetch = type === 'pending' ? getDeliveries : getDoneDeliveries;
-        const {
-          data: { pages: newPages, items },
-        } = await fetch({ id, currentPage: page });
-        const newData = formatItems(items);
-        setPages(newPages);
-        setData(newData);
-      };
-      fetchDeliveries({ type: deliveriesType, id: info.id, page: 1 });
-    }, [deliveriesType, info.id]),
-  );
+  const fetchInitialDeliveries = React.useCallback(() => {
+    const fetchDeliveries = async ({ type, id, page }) => {
+      const fetch = type === 'pending' ? getDeliveries : getDoneDeliveries;
+      const {
+        data: { pages: newPages, items },
+      } = await fetch({ id, currentPage: page });
+      const newData = formatItems(items);
+      setPages(newPages);
+      setData(newData);
+      setCurrentPage(page);
+    };
+    fetchDeliveries({ type: deliveriesType, id: info.id, page: 1 });
+  }, [deliveriesType, info.id]);
+  useFocusEffect(fetchInitialDeliveries);
   const loadMore = React.useCallback(() => {
     if (currentPage < pages) {
       const fetchDeliveries = async ({ type, id, page }) => {
@@ -89,10 +89,17 @@ const MainDeliveriesScreen = () => {
       fetchDeliveries({ type: deliveriesType, id: info.id, page: currentPage });
     }
   }, [deliveriesType, currentPage, info.id, pages]);
+  const [isRefreshing, toggleRefreshing] = useBoolean(false);
+  const handleRefresh = () => {
+    toggleRefreshing(true);
+    fetchInitialDeliveries();
+    toggleRefreshing(false);
+  };
+  const { primary } = React.useContext(ThemeContext);
   return (
     <FilledContainer>
       <TopSection>
-        <DeliverymanPhoto size={100} info={info} />
+        <DeliverymanPhoto size={70} info={info} />
         <TextSection>
           <Row>
             <WelcomeBackText>Bem vindo de volta, </WelcomeBackText>
@@ -132,9 +139,17 @@ const MainDeliveriesScreen = () => {
       <FlatList
         data={data}
         onEndReached={loadMore}
+        bounces
         ListFooterComponent={() => hasMore && <LoadingFooter />}
         onEndReachedThreshold={0.1}
         keyExtractor={delivery => delivery.id.toString()}
+        refreshControl={
+          <RefreshControl
+            onRefresh={handleRefresh}
+            colors={[primary]}
+            refreshing={isRefreshing}
+          />
+        }
         renderItem={({ item }) => <DeliveryCard delivery={item} />}
       />
     </FilledContainer>

@@ -5,7 +5,7 @@ export const TopSection = styled.View`
   flex-direction: row;
   width: 90%;
   margin: 20px auto;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 export const Row = styled.View`
