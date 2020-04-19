@@ -20,10 +20,12 @@ Using Yarn:
 
 Using NPM:
 > npx sequelize db:migrate:all
+
 > npm sequelize db:seed:all
 
 Using Yarn:
 > yarn sequelize db:migrate:all
+
 > yarn sequelize db:seed:all
 
 ### Running
