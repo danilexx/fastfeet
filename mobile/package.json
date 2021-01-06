@@ -16,7 +16,7 @@
     "@react-navigation/stack": "^5.1.0",
     "@unform/core": "^2.0.0",
     "@unform/mobile": "^2.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "date-fns": "^2.10.0",
     "easy-peasy": "^3.3.0",
     "polished": "^3.4.4",
